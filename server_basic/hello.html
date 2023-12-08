@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>퇴근 시간 계산기</title>
+</head>
+<body>
+  <h1>퇴근 시간 계산기</h1>
+  <p>
+    쉬는 시간을 입력하세요. (예: 15:30 - 15:45)
+    <br>
+    <input type="text" id="breakTimeInput" placeholder="시작 시간">
+    <input type="text" id="breakEndTimeInput" placeholder="종료 시간">
+    <button onclick="setBreakTime()">제출</button>
+  </p>
+  <p id="timeDisplay"></p>
+
+  <script>
+    // 현재 날짜 및 시간
+    const now = new Date();
+
+    // 사용자의 근무 시작 시간 (예: 9시 0분)
+    const startTime = new Date(now);
+    startTime.setHours(9, 0, 0, 0);
+
+    // 사용자에게 퇴근 시간 입력 받기
+    const inputEndTime = '18:00';
+    const [endHour, endMinute] = inputEndTime.split(':').map(Number);
+
+    // 퇴근 시간 설정
+    const endTime = new Date(startTime);
+    endTime.setHours(endHour, endMinute, 0, 0);
+
+    let breakTime, breakEndTime;
+
+    function setBreakTime() {
+      const breakTimeInput = document.getElementById('breakTimeInput').value;
+      const breakEndTimeInput = document.getElementById('breakEndTimeInput').value;
+
+      const [breakHour, breakMinute] = breakTimeInput.split(':').map(Number);
+      const [breakEndHour, breakEndMinute] = breakEndTimeInput.split(':').map(Number);
+
+      breakTime = new Date();
+      breakTime.setHours(breakHour, breakMinute, 0, 0);
+
+      breakEndTime = new Date();
+      breakEndTime.setHours(breakEndHour, breakEndMinute, 0, 0);
+    }
+
+    function checkTime() {
+      const currentTime = new Date();
+      const timeDisplay = document.getElementById('timeDisplay');
+
+      const timeLeftInSeconds = Math.floor((endTime - currentTime) / 1000);
+      const breakTimeLeftInSeconds = breakTime && breakEndTime
+        ? Math.floor((breakEndTime - currentTime) / 1000)
+        : null;
+
+      if (currentTime < startTime) {
+        timeDisplay.innerText = '업무 시작 전입니다.';
+      } else if (currentTime >= endTime) {
+        timeDisplay.innerText = '퇴근입니다.';
+      } else if (currentTime >= breakTime && currentTime < breakEndTime) {
+        timeDisplay.innerText = `쉬는 시간입니다. 쉬는 시간이 끝날 때까지 ${breakTimeLeftInSeconds}초 남았습니다.`;
+      } else {
+        timeDisplay.innerText = `퇴근까지 ${timeLeftInSeconds}초 남았습니다.`;
+      }
+    }
+
+    setInterval(checkTime, 1000);
+  </script>
+</body
